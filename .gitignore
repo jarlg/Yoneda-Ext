@@ -1,3 +1,5 @@
+*~
+
 .*.aux
 .*.d
 *.a
@@ -31,3 +33,6 @@ lia.cache
 nia.cache
 nlia.cache
 nra.cache
+
+Makefile*
+_CoqProject*
