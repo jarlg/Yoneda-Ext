@@ -2,7 +2,7 @@ From HoTT Require Import Basics Types Pointed Spaces.Nat Truncations HProp
   AbGroups AbSES WildCat Modalities.ReflectiveSubuniverse
   Colimit TruncType ExactSequence.
 
-Require Import EqRel Ext ES.
+Require Import EquivalenceRelation ES XII_5.
 
 Local Open Scope pointed_scope.
 Local Open Scope type_scope.
@@ -17,7 +17,7 @@ Definition Ext' `{Univalence} (n : nat) (B A : AbGroup) : Type
   := match n with
      | 0%nat => GroupHomomorphism B A
      | 1%nat => Ext B A
-     | n => Quotient (@es_mere_relation _ n B A)
+     | n => Quotient (@es_meqrel _ n B A)
      end.
 
 Global Instance ispointed_Ext' `{Univalence} (n : nat) (B A : AbGroup)
@@ -39,7 +39,7 @@ Definition es_in `{Univalence} {n : nat} {B A : AbGroup}
 (** TODO use this throughout! *)
 Definition es_zig_to_path `{Univalence} {n : nat}
   {B A : AbGroup} (E F : ES n B A)
-  : es_prerelation E F -> (es_in E = es_in F).
+  : es_zig E F -> (es_in E = es_in F).
 Proof.
   destruct n as [|[|]].
   - exact idmap.
@@ -50,7 +50,7 @@ Defined.
 
 Definition es_zag_to_path `{Univalence} {n : nat}
   {B A : AbGroup} (E F : ES n B A)
-  : es_prerelation F E -> (es_in E = es_in F).
+  : es_zig F E -> (es_in E = es_in F).
 Proof.
   destruct n as [|[|]].
   - exact (equiv_path_inverse _ _).
@@ -185,7 +185,7 @@ Admitted.
 
 Definition es_rfiber_to_ext_hfiber `{Univalence} {n : nat}
   {C B A : AbGroup} (E : ES n.+1 B A) (F : ES 1 C B)
-  : rfiber es_relation (es_pullback (inclusion F)) E
+  : rfiber es_eqrel (es_pullback (inclusion F)) E
     -> hfiber (ext_pullback (inclusion F)) (es_in E).
 Proof.
   apply (functor_sigma es_in); intros G rho.
@@ -198,7 +198,7 @@ Defined.
 Definition ext_hfiber_to_mere_es_rfiber `{Univalence} {n : nat}
   {C B A : AbGroup} (E : ES n.+1 B A) (F : ES 1 C B)
   : hfiber (ext_pullback (inclusion F)) (es_in E)
-    -> merely (rfiber es_relation (es_pullback (inclusion F)) E).
+    -> merely (rfiber es_eqrel (es_pullback (inclusion F)) E).
 Proof.
   intros [G p].
   (* First we choose a representative for G. *)
@@ -216,7 +216,7 @@ Defined.
 
 Definition iff_es_rfiber_ext_hfiber `{Univalence} {n : nat}
   {C B A : AbGroup} (E : ES n.+1 B A) (F : ES 1 C B)
-  : merely (rfiber es_relation (es_pullback (inclusion F)) E)
+  : merely (rfiber es_eqrel (es_pullback (inclusion F)) E)
     <-> merely (hfiber (ext_pullback (inclusion F)) (es_in E)).
 Proof.
   split.
@@ -236,7 +236,7 @@ Definition ext_ii_family `{Univalence} {n : nat} {C B A : AbGroup}
 
 Lemma iff_iii `{Univalence} {n : nat} {C B A : AbGroup}
   (E : ES n.+1 B A) (F : ES 1 C B)
-  : (es_mere_relation pt (es_abses_splice E F)) <-> (pt = ext_abses_splice (es_in E) F).
+  : (es_meqrel pt (es_abses_splice E F)) <-> (pt = ext_abses_splice (es_in E) F).
 Proof.
   apply (equiv_equiv_iff_hprop _ _)^-1.
   destruct n; rapply path_quotient.

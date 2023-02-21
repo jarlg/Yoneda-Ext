@@ -1,7 +1,7 @@
 From HoTT Require Import Basics Types WildCat Pointed Truncations
   ExactSequence AbGroups AbSES AbSES.SixTerm.
 
-Require Import Lemmas EqRel Ext ES HigherExt.
+Require Import Lemmas EquivalenceRelation Ext ES HigherExt.
 
 Local Open Scope pointed_scope.
 Local Open Scope type_scope.
@@ -107,7 +107,7 @@ Proof.
   { apply phomotopy_homotopy_hset.
     rapply Quotient_ind_hprop; intro F.
     apply qglue.
-    refine (transport (fun X => es_mere_relation X pt) _^ _).
+    refine (transport (fun X => es_meqrel X pt) _^ _).
     { refine (es_pullback_compose _ _ _ @ _).
       refine (es_pullback_homotopic _ _ (f':=grp_homo_const)).
       intro; apply isexact_inclusion_projection. }
