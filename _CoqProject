@@ -1,0 +1,13 @@
+-docroot .
+-R /home/jgtf/git/HoTT-master/theories HoTT
+-R . Top
+-arg -noinit
+-arg -indices-matter
+-arg -native-compiler -arg no
+
+EquivalenceRelation.v
+ES.v
+HigherExt.v
+Lemmas.v
+LES.v
+XII_5.v
