@@ -1,20 +1,12 @@
 From HoTT Require Import Basics Types WildCat Pointed Truncations
   ExactSequence AbGroups AbSES AbSES.SixTerm.
 
-Require Import Lemmas EquivalenceRelation Ext ES HigherExt.
+Require Import Lemmas EquivalenceRelation Ext ES HigherExt XII_5.
 
 Local Open Scope pointed_scope.
 Local Open Scope type_scope.
 
 (** * The long exact sequence of Ext groups *)
-
-(** We start with the contravariant case, in which the degree-wise maps are given by pulling back and the connecting maps are given by pushing out (or splicing). *)
-
-(** Notes about the underlying complex: 
-    1. the complex at one point easily follows from [es_pullback_compose] and [es_pullback_homotopic] -- even though these don't give pointed homotopies, they suffice when mapping into a set  
-    2. 
-
-*)
 
 (** Exactness at the domain of the connecting map, for all n. *)
 Global Instance isexact_extn_inclusion_splice `{Univalence} {n : nat}
@@ -28,7 +20,8 @@ Proof.
   { rapply isexact_homotopic_f.
     by apply phomotopy_homotopy_hset. }
   unshelve econstructor.
-  { refine (abses_ext_splice_reorder _ _ @* _).
+  { hnf.
+    refine (splice_pullback_to_pushout_phomotopy _ _ @* _).
     rewrite abses_pushout_inclusion.
     apply abses_ext_splice_pt. }
   intros [E p]; revert dependent E.
@@ -57,7 +50,7 @@ Proof.
   { rapply isexact_homotopic_if.
     all: by apply phomotopy_homotopy_hset. }
   srapply Build_IsExact.
-  { refine (abses_ext_splice_reorder' _ _ @* _).
+  { refine (splice_pullback_commute _ _ @* _).
     rewrite <- abses_pullback_projection.
     apply abses_ext_splice_pt. }
   hnf.
@@ -68,7 +61,7 @@ Proof.
   assert (U : merely (hfiber (ext_pullback (inclusion Fs)) (es_in T))).
   { rapply isexact_preimage.
     1: apply isexact_extn_inclusion_splice.
-    refine ((abses_ext_splice_reorder' _ _ _)^ @ _).
+    refine ((splice_pullback_commute _ _ _)^ @ _).
     destruct n; exact p. }
   strip_truncations; destruct U as [U q].
   pose (F' := abses_pushout (inclusion Fs) F).
@@ -85,10 +78,10 @@ Proof.
   refine (tr (ext_pullback alpha U; _)).
   apply path_sigma_hprop.
   unfold cxfib, Build_pMap, pointed_fun, pr1.
-  refine (abses_ext_splice_reorder'' _ _ _ @ _).
+  refine (splice_pullback_to_pushout _ _ _ @ _).
   refine (ap (ext_abses_splice U) r' @ _); clear r'.
   unfold F'.
-  refine ((abses_ext_splice_reorder'' _ _ _)^ @ _).
+  refine ((splice_pullback_to_pushout _ _ _)^ @ _).
   rewrite q.
   destruct n; reflexivity.
 Defined.
@@ -121,7 +114,7 @@ Proof.
   assert (U : merely (hfiber (ext_pullback (inclusion Fs)) (es_in T))).
   { rapply isexact_preimage.
     1: apply isexact_extn_inclusion_splice.
-    refine ((abses_ext_splice_reorder' _ _ _)^ @ _).
+    refine ((splice_pullback_commute _ _ _)^ @ _).
     destruct n; exact p. }
   strip_truncations; destruct U as [U q].
   pose (iF := abses_pushout (inclusion Fs) F).
@@ -143,9 +136,9 @@ Proof.
   refine (tr (ext_abses_splice U F'; _)).
   apply path_sigma_hprop.
   unfold cxfib, Build_pMap, pointed_fun, pr1.
-  refine (abses_ext_splice_reorder' F' (projection E) U @ _).
+  refine (splice_pullback_commute F' (projection E) U @ _).
   refine (ap (fun X => abses_ext_splice X U) r @ _).
-  refine ((abses_ext_splice_reorder _ _ _)^ @ _).
+  refine ((splice_pullback_to_pushout _ _ _)^ @ _).
   refine (ap (abses_ext_splice F) q @ _).
   destruct n; reflexivity.
 Defined.

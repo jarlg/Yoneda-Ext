@@ -1,14 +1,14 @@
-From HoTT Require Import Basics Types Spaces.Nat WildCat
-  Pointed Truncations HSet HFiber Limits.Pullback ExactSequence
+From HoTT Require Import Basics Types Spaces.Nat WildCat Pointed
+  Truncations HProp HSet HFiber Limits.Pullback ExactSequence
   AbGroups AbSES.
 
 
-Require Import EquivalenceRelation SixTerm ES.
+Require Import EquivalenceRelation SixTerm ES HigherExt.
 
 Local Open Scope pointed_scope.
 Local Open Scope type_scope.
 
-(** We prove Lemma XII.5.3, Lemma XII.5.4, and Lemma XII.5.5 in Mac Lane's "Homology". Using these, we deduce the long exact sequence in LES.v. The statements are named [XII_5_3], [XII_5_4], and [XII_5_5], respectively. *)
+(** We prove Lemma XII.5.3, Lemma XII.5.4, and Lemma XII.5.5 in Mac Lane's "Homology". Using these, we deduce the long exact sequence in LES.v. The statements are named [XII_5_3], [XII_5_4], and [XII_5_5], respectively. We do the proof on the level of [ES n] as opposed to the quotient [Ext n], since it's simpler to express things before truncating. Afterwards we show that analogous statements hold for [Ext n] in HigherExt.v. *)
 
 (** Since we'll be proving several goals of the form "the following 3 statements are equivalent" we make a helper structure: *)
 
@@ -404,4 +404,112 @@ Proof.
         by apply IHm.
       * apply (es_zag_fiber_inclusion zag).
         by apply IHm.
+Defined.
+
+
+(** * Lemma XII.5.5 for [Ext n] *)
+
+(** Relating condition (i) for ES and Ext. *)
+
+Definition es_rfiber_to_ext_hfiber `{Univalence} {n : nat}
+  {C B A : AbGroup} (E : ES n.+1 B A) (F : ES 1 C B)
+  : rfiber es_eqrel (es_pullback (inclusion F)) E
+    -> hfiber (ext_pullback (inclusion F)) (es_in E).
+Proof.
+  apply (functor_sigma es_in); intros G rho.
+  destruct n.
+  1: by destruct rho. (* path induction *)
+  rapply path_quotient.
+  exact (tr rho).
+Defined.
+
+Definition ext_hfiber_to_mere_es_rfiber `{Univalence} {n : nat}
+  {C B A : AbGroup} (E : ES n.+1 B A) (F : ES 1 C B)
+  : hfiber (ext_pullback (inclusion F)) (es_in E)
+    -> merely (rfiber es_eqrel (es_pullback (inclusion F)) E).
+Proof.
+  intros [G p].
+  (* First we choose a representative for G. *)
+  assert (G' : Tr (-1) (hfiber es_in G)).
+  1: destruct n; rapply center. (* both tr and class_of are surjective *)
+  strip_truncations.
+  destruct G' as [G' q]; induction q.
+  (* by inducting on [q], [G'] is definitionally in the image of [tr] *)
+  destruct n.
+  - pose proof (q := (equiv_path_Tr _ _)^-1 p); strip_truncations.
+    exact (tr (G'; q)).
+  -pose proof (q := (path_quotient _ _ _)^-1 p); strip_truncations.
+   exact (tr (G'; q)).
+Defined.
+
+Definition iff_es_rfiber_ext_hfiber `{Univalence} {n : nat}
+  {C B A : AbGroup} (E : ES n.+1 B A) (F : ES 1 C B)
+  : merely (rfiber es_eqrel (es_pullback (inclusion F)) E)
+    <-> merely (hfiber (ext_pullback (inclusion F)) (es_in E)).
+Proof.
+  split.
+  - apply Trunc_functor, es_rfiber_to_ext_hfiber.
+  - apply Trunc_rec, ext_hfiber_to_mere_es_rfiber.
+Defined.
+
+(** Relating condition (ii) for ES and Ext. *)
+
+Definition ext_ii_family `{Univalence} {n : nat} {C B A : AbGroup}
+  : Ext n.+1 B A -> Ext 1 C B -> Type
+  := fun E F => { bt : { B' : AbGroup & B' $-> B }
+                    & (pt = ext_pullback bt.2 E :> Ext n.+1 bt.1 A)
+                      * (hfiber (ext_pushout bt.2) F) }.
+
+(** Condition (iii) for ES and Ext. *)
+
+Lemma iff_iii `{Univalence} {n : nat} {C B A : AbGroup}
+  (E : ES n.+1 B A) (F : ES 1 C B)
+  : (es_meqrel pt (es_abses_splice E F)) <-> (pt = ext_abses_splice (es_in E) F).
+Proof.
+  apply (equiv_equiv_iff_hprop _ _)^-1.
+  destruct n; rapply path_quotient.
+Defined.
+
+(** Now we show that [ext_ii_family] corresponds to the propositional truncation of [ii_family] from ES.v. *)
+
+Lemma iff_es_ext_ii_family `{Univalence} {n : nat} {C B A : AbGroup}
+  (E : ES n.+1 B A) (F : ES 1 C B)
+  : merely (es_ii_family E F) <-> merely (ext_ii_family (es_in E) (es_in F)).
+Proof.
+  apply (equiv_equiv_iff_hprop _ _)^-1.
+  refine (equiv_O_sigma_O _ _ oE _ oE (equiv_O_sigma_O _ _)^-1).
+  apply Trunc_functor_equiv.
+  apply equiv_functor_sigma_id; intros [B' alpha].
+  refine ((equiv_O_prod_cmp _ _ _)^-1 oE _ oE equiv_O_prod_cmp _ _ _).
+  apply equiv_functor_prod'.
+  { destruct n.
+    all: refine (equiv_tr _ _ oE _).
+    - apply equiv_path_Tr.
+    - rapply path_quotient. }
+  refine (_ oE (equiv_O_sigma_O _ _)^-1).
+  apply equiv_iff_hprop.
+  - apply Trunc_functor.
+    apply (functor_sigma tr); cbn; intro G.
+    apply path_Tr.
+  - apply Trunc_rec; cbn; intros [G p].
+    revert p; strip_truncations; cbn.
+    rapply (equiv_ind (equiv_path_Tr _ _)).
+    apply Trunc_functor; intro p.
+    exact (G; tr p).
+Defined.
+
+(** Now Lemma XII.5.5 follows for Ext as well. *)
+
+Lemma ext_XII_5_5 `{Univalence} {n : nat} {C B A : AbGroup}
+  (E : ES n.+1 B A) (F : ES 1 C B)
+  : TFAE3 (merely (hfiber (ext_pullback (inclusion F)) (es_in E)))
+      (merely (ext_ii_family (es_in E) (es_in F)))
+      (pt = ext_abses_splice (es_in E) F).
+Proof.
+  rapply iff_TFAE3.
+  - apply iff_es_rfiber_ext_hfiber.
+  - apply iff_es_ext_ii_family.
+  - apply iff_iii.
+  - apply TFAE3_merely.
+    apply XII_5_5.
 Defined.
