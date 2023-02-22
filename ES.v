@@ -15,7 +15,7 @@ Local Open Scope type_scope.
 (* NB: [ES n] is not the real n-type of "length-n exact sequences," i.e., the classifying space of the category of such. Rather, it is an approximation which has the correct set-truncation. *)
 Fixpoint ES' (n : nat) : AbGroup^op -> AbGroup -> Type
   := match n with
-     | 0%nat => fun B A => GroupHomomorphism B A
+     | 0%nat => GroupHomomorphism
      | 1%nat => AbSES
      | S n => fun C A => exists B, (ES' n B A) * (AbSES C B)
      end.

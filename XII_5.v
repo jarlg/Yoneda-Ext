@@ -3,7 +3,7 @@ From HoTT Require Import Basics Types Spaces.Nat WildCat Pointed
   AbGroups AbSES.
 
 
-Require Import EquivalenceRelation SixTerm ES HigherExt.
+Require Import Lemmas EquivalenceRelation ES HigherExt.
 
 Local Open Scope pointed_scope.
 Local Open Scope type_scope.
