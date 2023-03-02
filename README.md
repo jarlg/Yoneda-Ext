@@ -1,6 +1,7 @@
 # The long exact sequence of Yoneda Ext
 
-This repository contains the formalisation of the long exact sequence of Yoneda Ext in univalent foundations following the proof of theorem XII.5.1 in Mac Lane's "Homology".
+This repository mainly contains material related to section 5 of the paper [Formalising Yoneda Ext in Univalent Foundations](https://arxiv.org/abs/2302.12678) which pertains to the long exact sequence of Ext groups.
+Our formalisation follows the proof of theorem XII.5.1 in Mac Lane's "Homology".
 The following is a brief overview of the files:
 
 - `Lemmas.v` contains two general lemmas, and a proof that `loops_abses` is a group isomorphism along with related facts.
@@ -11,3 +12,4 @@ The following is a brief overview of the files:
 - `LES.v` contains the proof of exactness of the long exact sequence
 
 This version has been tested with Coq 8.16.1 against commit 3062f0a15 of HoTT-Coq from Feb 19, 2023.
+You will need to adjust `_CoqProject` to your system, e.g., by changing the second line to point to your local build of Coq-HoTT.
