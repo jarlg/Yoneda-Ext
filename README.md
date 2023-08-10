@@ -1,6 +1,6 @@
 # The long exact sequence of Yoneda Ext
 
-This repository mainly contains material related to section 5 of the paper [Formalising Yoneda Ext in Univalent Foundations](https://arxiv.org/abs/2302.12678) which pertains to the long exact sequence of Ext groups.
+This repository mainly contains material related to section 5 of the paper [Formalising Yoneda Ext in Univalent Foundations](https://arxiv.org/abs/2302.12678) ([doi](https://drops.dagstuhl.de/opus/volltexte/2023/18391/)) which pertains to the long exact sequence of Ext groups.
 Our formalisation follows the proof of theorem XII.5.1 in Mac Lane's "Homology".
 The following is a brief overview of the files:
 
